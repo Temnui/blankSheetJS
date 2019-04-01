@@ -1,40 +1,29 @@
-/* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
-/*global Uint8Array, console */
-/* exported export_xlsx */
-/* eslint no-use-before-define:0 */
-var XLSX = require('xlsx');
-var electron = require('electron').remote;
+let XLSX = require('xlsx');
+let electron = require('electron').remote;
 
-var process_wb = (function() {
-	var HTMLOUT = document.getElementById('htmlout');
-	var XPORT = document.getElementById('xport');
+let process_wb = (function() {
+	let HTMLOUT = document.getElementById('htmlout');
+	let XPORT = document.getElementById('xport');
 
 	return function process_wb(wb) {
 		XPORT.disabled = false;
 		HTMLOUT.innerHTML = "";
 		wb.SheetNames.forEach(function(sheetName) {
-			var htmlstr = XLSX.utils.sheet_to_html(wb.Sheets[sheetName],{editable:true});
-			HTMLOUT.innerHTML += htmlstr;
+            HTMLOUT.innerHTML += XLSX.utils.sheet_to_html(wb.Sheets[sheetName], {editable: true});
 		});
 	};
 })();
 
-var _gaq = _gaq || [];
-_gaq.push(['_setAccount', 'UA-36810333-1']);
-_gaq.push(['_trackPageview']);
+function vars() {
+    let e.target.result = 1;
+}
 
-(function() {
-	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-})();
-
-var do_file = (function() {
+let do_file = (function() {
 	return function do_file(files) {
-		var f = files[0];
-		var reader = new FileReader();
+		let f = files[0];
+		let reader = new FileReader();
 		reader.onload = function(e) {
-			var data = e.target.result;
+            let data = e.target.result;
 			data = new Uint8Array(data);
 			process_wb(XLSX.read(data, {type: 'array'}));
 		};
@@ -43,7 +32,7 @@ var do_file = (function() {
 })();
 
 (function() {
-	var drop = document.getElementById('drop');
+	let drop = document.getElementById('drop');
 
 	function handleDrop(e) {
 		e.stopPropagation();
@@ -63,9 +52,9 @@ var do_file = (function() {
 })();
 
 (function() {
-	var readf = document.getElementById('readf');
+	let readf = document.getElementById('readf');
 	function handleF(/*e*/) {
-		var o = electron.dialog.showOpenDialog({
+		let o = electron.dialog.showOpenDialog({
 			title: 'Select a file',
 			filters: [{
 				name: "Spreadsheets",
@@ -79,17 +68,17 @@ var do_file = (function() {
 })();
 
 (function() {
-	var xlf = document.getElementById('xlf');
+	let xlf = document.getElementById('xlf');
 	function handleFile(e) { do_file(e.target.files); }
 	xlf.addEventListener('change', handleFile, false);
 })();
 
-var export_xlsx = (function() {
-	var HTMLOUT = document.getElementById('htmlout');
-	var XTENSION = "xls|xlsx|xlsm|xlsb|xml|csv|txt|dif|sylk|slk|prn|ods|fods|htm|html".split("|")
+let export_xlsx = (function() {
+	let HTMLOUT = document.getElementById('htmlout');
+	let XTENSION = "xls|xlsx|xlsm|xlsb|xml|csv|txt|dif|sylk|slk|prn|ods|fods|htm|html".split("|");
 	return function() {
-		var wb = XLSX.utils.table_to_book(HTMLOUT);
-		var o = electron.dialog.showSaveDialog({
+		let wb = XLSX.utils.table_to_book(HTMLOUT);
+		let o = electron.dialog.showSaveDialog({
 			title: 'Save file as',
 			filters: [{
 				name: "Spreadsheets",

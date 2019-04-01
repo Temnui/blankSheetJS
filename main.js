@@ -1,10 +1,10 @@
 /* xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
 /* from the electron quick-start */
-var electron = require('electron');
-var XLSX = require('xlsx');
-var app = electron.app;
+let electron = require('electron');
+let XLSX = require('xlsx');
+let app = electron.app;
 
-var win = null;
+let win = null;
 
 function createWindow() {
 	if(win) return;
