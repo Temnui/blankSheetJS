@@ -1,5 +1,9 @@
 let XLSX = require('xlsx');
 let electron = require('electron').remote;
+const parseString = require('xml2js').parseString;
+const xml2js = require('xml2js');
+const fs = require('fs');
+let data = {};
 
 let process_wb = (function() {
 	let HTMLOUT = document.getElementById('htmlout');
@@ -8,26 +12,38 @@ let process_wb = (function() {
 	return function process_wb(wb) {
 		XPORT.disabled = false;
 		HTMLOUT.innerHTML = "";
+		console.log('done');
 		wb.SheetNames.forEach(function(sheetName) {
             HTMLOUT.innerHTML += XLSX.utils.sheet_to_html(wb.Sheets[sheetName], {editable: true});
+			data = XLSX.utils.sheet_to_json(wb.Sheets[sheetName]);
 		});
 	};
 })();
 
-function vars() {
-    let e.target.result = 1;
-}
+let xml = '';
 
 let do_file = (function() {
 	return function do_file(files) {
 		let f = files[0];
-		let reader = new FileReader();
-		reader.onload = function(e) {
-            let data = e.target.result;
-			data = new Uint8Array(data);
-			process_wb(XLSX.read(data, {type: 'array'}));
-		};
-		reader.readAsArrayBuffer(f);
+		if (/.xml/.test(f.name)) {
+			let parser = new xml2js.Parser();
+			fs.readFile(f.path, function(err, data) {
+				parser.parseString(data, function (err, result) {
+					console.dir(result);
+					console.log('Done');
+					xml = result;
+				});
+			});
+		} else {
+			let reader = new FileReader();
+			reader.onload = function (e) {
+				// noinspection JSUnresolvedVariable
+				let data = e.target.result;
+				data = new Uint8Array(data);
+				process_wb(XLSX.read(data, {type: 'array'}));
+			};
+			reader.readAsArrayBuffer(f);
+		}
 	};
 })();
 
@@ -91,3 +107,44 @@ let export_xlsx = (function() {
 	};
 })();
 void export_xlsx;
+
+function fillNames() {
+	xml.avon.page.forEach(page => {
+		if (page.product !== undefined) {
+			page.product.forEach(product => {
+				if (product.$.name === '') {
+					data.forEach(item => {
+						if (item.ITEMNUMBER == product.$.id) {
+							product.$.name = item.ITEMNAME;
+							console.log(product.$.name);
+						}
+					})
+				}
+				if (product.subproduct !== undefined) {
+					product.subproduct.forEach(subproduct => {
+						if (subproduct.$.name === '') {
+							data.forEach(item => {
+								if (item.ITEMNUMBER == subproduct.$.id) {
+									subproduct.$.name = item.ITEMNAME;
+									console.log(subproduct.$.name);
+								}
+							})
+						}
+					})
+				}
+			})
+		}
+	})
+}
+
+let builder = new xml2js.Builder();
+let xmlOut = builder.buildObject(xml);
+
+function exportFile() {
+	builder = new xml2js.Builder();
+	xmlOut = builder.buildObject(xml);
+	fs.writeFile('pages.xml', xmlOut, (err) => {
+		if (err) throw err;
+		console.log('The file has been saved!');
+	});
+}

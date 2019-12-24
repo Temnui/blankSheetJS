@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/blankSheetJS.iml" filepath="$PROJECT_DIR$/.idea/blankSheetJS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/XLStoXMLparcer.iml" filepath="$PROJECT_DIR$/.idea/XLStoXMLparcer.iml" />
     </modules>
   </component>
 </project>
